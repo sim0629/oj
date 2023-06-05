@@ -32,30 +32,6 @@ struct Board {
   }
 
   bool lost() {
-    for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 4; j++) {
-        // ##
-        // #.
-        if (v[i + 0][j + 0] == '.' && v[i + 0][j + 1] == '.' && v[i + 1][j + 0] == '.') {
-          return false;
-        }
-        // ##
-        // .#
-        if (v[i + 0][j + 0] == '.' && v[i + 0][j + 1] == '.' && v[i + 1][j + 1] == '.') {
-          return false;
-        }
-        // .#
-        // ##
-        if (v[i + 0][j + 1] == '.' && v[i + 1][j + 0] == '.' && v[i + 1][j + 1] == '.') {
-          return false;
-        }
-        // #.
-        // ##
-        if (v[i + 0][j + 0] == '.' && v[i + 1][j + 0] == '.' && v[i + 1][j + 1] == '.') {
-          return false;
-        }
-      }
-    }
     // ##
     for (int i = 0; i < 5; i++) {
       for (int j = 0; j < 4; j++) {
