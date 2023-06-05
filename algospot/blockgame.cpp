@@ -31,6 +31,39 @@ struct Board {
     return k;
   }
 
+  int key2() {
+    int k = 0;
+    for (int i = 0; i < 5; i++) {
+      for (int j = 4; j >= 0; j--) {
+        k <<= 1;
+        k |= (v[i][j] == '.' ? 0 : 1);
+      }
+    }
+    return k;
+  }
+
+  int key3() {
+    int k = 0;
+    for (int i = 4; i >= 0; i--) {
+      for (int j = 0; j < 5; j++) {
+        k <<= 1;
+        k |= (v[i][j] == '.' ? 0 : 1);
+      }
+    }
+    return k;
+  }
+
+  int key4() {
+    int k = 0;
+    for (int i = 4; i >= 0; i--) {
+      for (int j = 4; j >= 0; j--) {
+        k <<= 1;
+        k |= (v[i][j] == '.' ? 0 : 1);
+      }
+    }
+    return k;
+  }
+
   bool lost() {
     // ##
     for (int i = 0; i < 5; i++) {
@@ -56,6 +89,18 @@ struct Board {
     int k = key();
     if (memo.find(k) != memo.end()) {
       return memo[k];
+    }
+    int k2 = key2();
+    if (memo.find(k2) != memo.end()) {
+      return memo[k2];
+    }
+    int k3 = key3();
+    if (memo.find(k3) != memo.end()) {
+      return memo[k3];
+    }
+    int k4 = key4();
+    if (memo.find(k4) != memo.end()) {
+      return memo[k4];
     }
 
     if (lost()) {
