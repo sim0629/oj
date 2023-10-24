@@ -5,6 +5,7 @@
 #include <iostream>
 #include <iterator>
 #include <map>
+#include <random>
 #include <set>
 #include <stack>
 #include <string>
@@ -20,6 +21,10 @@ const double EPS = 1e-10;
 const double ROOT_MIN = -11;
 const double ROOT_MAX = 11;
 
+double equals(double x0, double x1) {
+  return -EPS < (x0 - x1) && (x0 - x1) < EPS;
+}
+
 double y(const vector<double> &equation, double x) {
   int degree = equation.size() - 1;
   double sum = 0;
@@ -30,7 +35,7 @@ double y(const vector<double> &equation, double x) {
 }
 
 double search_internal(const vector<double> &equation, double x_neg, double x_pos) {
-  while (!(-EPS < (x_neg - x_pos) && (x_neg - x_pos) < EPS)) {
+  while (!equals(x_neg, x_pos)) {
     double x_new = (x_neg + x_pos) / 2;
     double y_new = y(equation, x_new);
     if (y_new > 0) {
@@ -74,6 +79,54 @@ vector<double> solve(const vector<double> &equation) {
   return solutions;
 }
 
+void print_vector(const vector<double> &v) {
+  for (int i = 0; i < v.size(); i++) {
+    cout << v[i] << ' ';
+  }
+}
+
+void run_tests(int degree) {
+  random_device rd;
+  mt19937 gen(rd());
+  std::uniform_real_distribution<> dis(-10, 10);
+  for (int t = 0; t < 10000; t++) {
+    vector<double> answers;
+    for (int i = 0; i < degree; i++) {
+      answers.push_back(dis(gen));
+    }
+    sort(answers.begin(), answers.end());
+    vector<double> equation;
+    if (degree == 2) {
+      equation.push_back(1);
+      equation.push_back(-(answers[0] + answers[1]));
+      equation.push_back(answers[0] * answers[1]);
+    } else if (degree == 3) {
+      equation.push_back(1);
+      equation.push_back(-(answers[0] + answers[1] + answers[2]));
+      equation.push_back(answers[0] * answers[1] + answers[1] * answers[2] + answers[2] * answers[0]);
+      equation.push_back(-answers[0] * answers[1] * answers[2]);
+    } else {
+      cout << "Unsupported degree: " << degree << '\n';
+      return;
+    }
+    cout << '[' << t << "] ";
+    print_vector(equation);
+    cout << '\n';
+    vector<double> solutions = solve(equation);
+    for (int i = 0; i < degree; i++) {
+      if (!equals(answers[i], solutions[i])) {
+        cout << "Found wrong answer\n";
+        cout << "answers: ";
+        print_vector(answers);
+        cout << "\nsolutions: ";
+        print_vector(solutions);
+        cout << "\n";
+        return;
+      }
+    }
+  }
+}
+
 int main(void) {
   ios::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
   int C;
@@ -89,6 +142,7 @@ int main(void) {
     }
     vector<double> solutions = solve(equation);
     for (int i = 0; i < n; i++) {
+      cout.precision(10);
       cout << solutions[i];
       cout << ((i + 1 < n) ? ' ' : '\n');
     }
