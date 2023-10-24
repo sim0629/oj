@@ -29,17 +29,25 @@ double y(const vector<double> &equation, double x) {
   return sum;
 }
 
-double newton(const vector<double> &equation, const vector<double> &derivative, double x0) {
-  double y0, y1, x1, x_diff;
-  while (true) {
-    y0 = y(equation, x0);
-    y1 = y(derivative, x0);
-    x1 = x0 - y0 / y1;
-    x_diff = x1 - x0;
-    if (-EPS < x_diff && x_diff < EPS) {
-      return x1;
+double search_internal(const vector<double> &equation, double x_neg, double x_pos) {
+  while (!(-EPS < (x_neg - x_pos) && (x_neg - x_pos) < EPS)) {
+    double x_new = (x_neg + x_pos) / 2;
+    double y_new = y(equation, x_new);
+    if (y_new > 0) {
+      x_pos = x_new;
+    } else {
+      x_neg = x_new;
     }
-    x0 = x1;
+  }
+  return x_pos;
+}
+
+double search(const vector<double> &equation, double x_left, double x_right) {
+  double y_left = y(equation, x_left);
+  if (y_left < 0) {
+    return search_internal(equation, x_left, x_right);
+  } else {
+    return search_internal(equation, x_right, x_left);
   }
 }
 
@@ -58,11 +66,11 @@ vector<double> solve(const vector<double> &equation) {
   }
 
   vector<double> inflections = solve(derivative);
-  solutions.push_back(newton(equation, derivative, (ROOT_MIN + inflections[0]) / 2));
+  solutions.push_back(search(equation, ROOT_MIN, inflections[0]));
   for (int i = 1; i < inflections.size(); i++) {
-    solutions.push_back(newton(equation, derivative, (inflections[i - 1] + inflections[i]) / 2));
+    solutions.push_back(search(equation, inflections[i - 1], inflections[i]));
   }
-  solutions.push_back(newton(equation, derivative, (inflections[inflections.size() - 1] + ROOT_MAX) / 2));
+  solutions.push_back(search(equation, inflections[inflections.size() - 1], ROOT_MAX));
   return solutions;
 }
 
