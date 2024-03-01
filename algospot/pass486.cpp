@@ -9,7 +9,7 @@
 #include <stack>
 #include <string>
 #include <tuple>
-#include <unordered_set>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 #include <queue>
@@ -30,23 +30,23 @@ void precalc_primes() {
   }
 }
 
+unordered_map<int, int> memo;
+
 int number_of_divisors(int n) {
   if (n == 1) return 1;
-  int result = 1;
+  if (!is_not_prime[n]) return 2;
+  if (memo.find(n) != memo.end()) {
+    return memo[n];
+  }
   for (int prime : primes) {
     int count = 0;
     while (n % prime == 0) {
       n /= prime;
       count++;
     }
-    result *= (count + 1);
-    if (n == 1) break;
-    if (prime * prime > n) {
-      result *= 2;
-      break;
-    }
+    return memo[n] = ((count + 1) * number_of_divisors(n));
   }
-  return result;
+  return 1; // impossible
 }
 
 int main(void) {
